@@ -5,7 +5,6 @@ con = sql.connect("data.db")
 cur = con.cursor()
 
 # Creating table for data storage
-c1 = cur.execute("CREATE TABLE tags(tagname, priority)") 
-c2 = cur.execute("CREATE TABLE timetrack(time, activity, tag)")
-
+c1 = cur.execute("CREATE TABLE settings(option, state)")
+c1 = cur.execute("CREATE TABLE tags(tagname, priority)")
 con.commit()
