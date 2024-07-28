@@ -52,6 +52,60 @@ class Decor:
 
         return final
     
+    def alert(self, text, showseperator=1):
+        lendashsfordecor = '⁻' * (len(text)+4)
+
+        print( colorama.Style.BRIGHT, f'{self.textmultiplier(self.terminalwidth // 4)} [!] {text} ', colorama.Style.NORMAL)
+        if showseperator:
+            print( colorama.Style.BRIGHT, f'{self.textmultiplier(self.terminalwidth // 4)} {lendashsfordecor} ', colorama.Style.NORMAL)
+
+
+
+    
+                            
+    def show_main_title(self):
+
+
+        self.clearterminal()
+
+
+        maintitle = self.justifycenter('''
+█████████████████████████████████████████████████████
+█─▄▄─█▄─▄▄─█▄─▄▄─█▄─▀█▄─▄█▀▀▀▀▀██─▄─▄─█▄─▀█▀─▄█─▄▄▄▄█
+█─██─██─▄▄▄██─▄█▀██─█▄▀─███████████─████─█▄█─██▄▄▄▄─█
+▀▄▄▄▄▀▄▄▄▀▀▀▄▄▄▄▄▀▄▄▄▀▀▄▄▀▀▀▀▀▀▀▀▀▄▄▄▀▀▄▄▄▀▄▄▄▀▄▄▄▄▄▀''')
+        subtitle = self.justifycenter('By @Arkarimi On Github')
+
+
+            
+
+
+        print(maintitle)
+        print(subtitle)
+        print()
+        print()
+
+    
+    def request(self, request='', showreqtext=0, place=''):
+        if showreqtext==1:
+            lendashsfordecor = '⁻' * (len(request)+4)
+            print( colorama.Style.BRIGHT, f'{self.textmultiplier(self.terminalwidth // 4)} [!] {request} ', colorama.Style.NORMAL)
+            print( colorama.Style.BRIGHT, f'{self.textmultiplier(self.terminalwidth // 4)} {lendashsfordecor} ', colorama.Style.NORMAL)
+
+        if place != '':
+            userinput = input(f'{self.textmultiplier(self.terminalwidth //4 )}  {place} | >>> ')
+            return userinput
+        
+        else:
+            userinput = input(f'{self.textmultiplier(self.terminalwidth //4 )}  >>> ')
+
+        return userinput
+
+
+
+        
+
+    
 
 
 
@@ -62,7 +116,7 @@ class Decor:
 
 
 
-class Response:
+class Main:
     dec = Decor()
     
     latestresponse = []
@@ -71,14 +125,34 @@ class Response:
         pass
 
 
+    def showmain(self):
+
+        actionlist = ['Time Management', 'Analysis', 'Settings']
+
+
+        # "makelist" : function for decorated list display + print
+
+#        self.show_main_title()
+        
+        self.dec.alert('Type in your choice/shortcut')
+        
+        self.dec.makelist(actionlist)
+
+        print()
+        self.askforinput('main')
+
+    
+
+
     def askforinput(self, place):
 
-        response_handler = Response()
+        response_handler = Main()
         run = 1
 
         while run == 1:
             
-            userinput = input(f'{self.dec.textmultiplier(self.dec.terminalwidth //4 )} >>> ')
+            userinput = self.dec.request(place=place)
+
             my_response = response_handler.get_response(userinput, place)
             
             if my_response == False:
@@ -88,7 +162,9 @@ class Response:
                 
 
     def show_time_management(self):
-        actionlist = ['add', 'view', 'edit']
+        self.dec.clearterminal()
+        self.dec.show_main_title()
+        actionlist = ['Load Today', 'Load Other Days']
 
 
         # "makelist" : function for decorated list display + print
@@ -99,7 +175,10 @@ class Response:
         self.dec.makelist(actionlist)
 
         print()
-        self.askforinput('main')
+        self.askforinput('Time-Manage')
+
+    def add_time(self):
+        pass
 
 
 
@@ -110,7 +189,7 @@ class Response:
             '2' : '',
         },
 
-        'TimeManage' : {
+        'Time-Manage' : {
             #today
             '0' : '',
             #load day
@@ -209,67 +288,11 @@ class Response:
 
 
 
-
-# Menu Handling
-class Menu:
-    dec = Decor()
-    res = Response()
-
-    loc = 'main'
-
-    
-    def __init__(self):
-        pass
-
-
-                            
-    def show_main_title(self):
-
-
-        self.dec.clearterminal()
-
-
-        maintitle = self.dec.justifycenter('''
-█████████████████████████████████████████████████████
-█─▄▄─█▄─▄▄─█▄─▄▄─█▄─▀█▄─▄█▀▀▀▀▀██─▄─▄─█▄─▀█▀─▄█─▄▄▄▄█
-█─██─██─▄▄▄██─▄█▀██─█▄▀─███████████─████─█▄█─██▄▄▄▄─█
-▀▄▄▄▄▀▄▄▄▀▀▀▄▄▄▄▄▀▄▄▄▀▀▄▄▀▀▀▀▀▀▀▀▀▄▄▄▀▀▄▄▄▀▄▄▄▀▄▄▄▄▄▀''')
-        subtitle = self.dec.justifycenter('By @Arkarimi On Github')
-
-
-            
-
-
-        print(maintitle)
-        print(subtitle)
-        print()
-        print()
-
-    def showmain(self):
-
-        actionlist = ['Time Management', 'Analysis', 'Settings']
-
-
-        # "makelist" : function for decorated list display + print
-
-#        self.show_main_title()
-        
-        print( colorama.Style.BRIGHT, f'{self.dec.textmultiplier(self.dec.terminalwidth // 4)} [!] Type in your choice/shortcut ', colorama.Style.NORMAL)
-        print(colorama.Style.BRIGHT, f'{self.dec.textmultiplier(self.dec.terminalwidth // 4)} ⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻ ', colorama.Style.NORMAL)
-        
-        self.dec.makelist(actionlist)
-
-        print()
-        self.res.askforinput('main')
-
-    def choose():
-
-
-
         
 
-m = Menu()
-m.show_main_title()
+m = Main()
+d = Decor()
+d.show_main_title()
 m.showmain()
 
 
