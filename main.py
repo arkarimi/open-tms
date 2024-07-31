@@ -1,7 +1,7 @@
 import os
 import datetime
 import colorama
-import datamanage as dm
+from datamanage import Data as data
 
 # Decoration Settings
 class Decor:
@@ -164,7 +164,7 @@ class Main:
     def show_time_management(self):
         self.dec.clearterminal()
         self.dec.show_main_title()
-        actionlist = ['Load Today', 'Load Other Days']
+        actionlist = ['Load Today', 'Load Other Days', 'Back']
 
 
         # "makelist" : function for decorated list display + print
@@ -177,8 +177,22 @@ class Main:
         print()
         self.askforinput('Time-Manage')
 
-    def add_time(self):
-        pass
+    def add_time(self, today):
+
+        tablename = ''
+        if today == 1:
+            todayexists = data.checktodayexists()
+            if todayexists == 0:
+                data.addDay()
+
+            tablename = data.todayTableName()
+
+            self.dec.alert('Today Selected! ...')
+
+            
+        else:
+#            self.dec.request()
+            pass
 
 
 
@@ -191,9 +205,9 @@ class Main:
 
         'Time-Manage' : {
             #today
-            '0' : '',
+            '0' : add_time(today=1),
             #load day
-            '1' : '',
+            '1' : add_time(today=0),
 
         },
 
