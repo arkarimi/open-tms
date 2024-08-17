@@ -1,7 +1,8 @@
 import os
 import datetime
 import colorama
-from datamanage import Data as data
+from datamanage import Data
+from dateutil.relativedelta import relativedelta
 
 # Decoration Settings
 class Decor:
@@ -94,10 +95,12 @@ class Decor:
 
         if place != '':
             userinput = input(f'{self.textmultiplier(self.terminalwidth //4 )}  {place} | >>> ')
+            print()
             return userinput
         
         else:
             userinput = input(f'{self.textmultiplier(self.terminalwidth //4 )}  >>> ')
+            print()
 
         return userinput
 
@@ -120,12 +123,17 @@ class Main:
     dec = Decor()
     
     latestresponse = []
+    maincmds = ['exit']
 
     def __init__(self):
         pass
 
+    def immediatecommand(self, command):
+        pass
 
-    def showmain(self):
+    def showmain(self, newpage=1):
+        if newpage == 1:
+            self.dec.show_main_title()
 
         actionlist = ['Time Management', 'Analysis', 'Settings']
 
@@ -142,7 +150,12 @@ class Main:
         self.askforinput('main')
 
     
-
+    #returns boolean values if command is immddiate
+    def checkimmediatecommand(self, command):
+        if command in self.maincmds:
+            return True
+        else:
+            return False
 
     def askforinput(self, place):
 
@@ -177,7 +190,76 @@ class Main:
         print()
         self.askforinput('Time-Manage')
 
-    def add_time(self, today):
+    def shortcut_return_valid_date(self,command):
+        #check if command is right
+        listofcommands = ['days', 'months', 'years']
+        howmanyofcommands = [0,0,0]
+        
+        #removing -s from the commands
+        command = command[1:]
+        if len(command) % 2 == 0 and len(command) > 0 and len(command) <=6:
+            validation_step1 = 1
+            for i in range(0, len(command)):
+                if i % 2 == 0:
+                    if command[i].isnumeric() == 0:
+                        validation_step1 = 0
+                else:
+                    if command[i] not in listofcommands:
+                        validation_step1 = 0
+                    else:
+                        howmanyofcommands[listofcommands.index(command[i])] += 1
+
+            #checks if all values are 0
+            sumx = 0
+            if validation_step1 == 1:
+                for i in howmanyofcommands:
+                    if i > 1:
+                        validation_step1 = 0
+                    else:
+                        sumx += i
+            else:
+                return False
+            
+            print('jo')
+            if validation_step1 == 1 and sumx == 0:
+                return False
+            
+            # If the program continues further from here it means that validation_step1 == 1
+            # with this assumption sumx counts the number of listofcommands[] elements the main command has called
+            # with that assumption ...
+
+            #this variable here shows how many d,m,y do we need to get back
+            valuescorwithcommandindex = [0,0,0]
+            for i in range(0,len(command)):
+                #up to now we are sure that the command is in the following format
+                # number, cmd, number, cmd ...
+                # so with that and knowing that our counter is 0 based we can say that if our counter number mod 2 == 0
+                # the counter is pointing at a number that corelates to the string with the index countercalue+1
+
+                if i % 2 == 0:
+                    valuescorwithcommandindex[listofcommands.index(command[i+1])] += int(command[i])
+
+                # this might have become too complicated i may change this later on ... !
+                # I think I could have implemented it in better and clearer way
+
+            
+            prefinaldate = datetime.datetime.now()
+            finaldate = prefinaldate - relativedelta(years=valuescorwithcommandindex[2], months=valuescorwithcommandindex[1]) - datetime.timedelta(days=valuescorwithcommandindex[0])
+
+            print(finaldate)
+            #here we return the database table name that is responsible for storing the wanted time values
+            return f'rec_{finaldate.year}_{finaldate.month}_{finaldate.day}'
+
+            
+
+            
+        else:
+            return False
+
+
+
+    def add_time(self,today):
+        data = Data()
 
         tablename = ''
         if today == 1:
@@ -191,8 +273,34 @@ class Main:
 
             
         else:
-#            self.dec.request()
-            pass
+            #you can pass in prev days in two ways ( -p 2 ) = 2 days before and yyyymmdd
+            validdate = 0
+            while validdate == 0:
+                rawdate = self.dec.request("Enter date in (yyyy/mm/dd) or shortcut (starting with -s): ", showreqtext=1)
+                if self.checkimmediatecommand(rawdate) == True:
+                    self.immediatecommand()
+                else:
+                    # check if is shortcut or not
+                    shortcutx = rawdate.split(' ')
+                    shortcutx = [shct for shct in shortcutx if not '']
+                    print(shortcutx)
+                    if shortcutx[0] == '-s':
+                        # shortcut function -- shortcut_return_valid_date
+                        date = self.shortcut_return_valid_date(shortcutx)
+                        if date != False:
+                            dbexists = Data.checkotherdayexists(date)
+
+                            tablename = date
+                            validdate = 1
+                            if dbexists != 1:
+                                Data.addtable(self,name=date)
+                                self.dec.alert(f'Day: {date} selected! ... [NewDay]''')
+                            else:
+                                
+                                self.dec.alert(f'Day: {date} selected! ...''')
+
+                        
+
 
 
 
@@ -205,9 +313,10 @@ class Main:
 
         'Time-Manage' : {
             #today
-            '0' : add_time(today=1),
+            '0' : lambda self: self.add_time(1),
             #load day
-            '1' : add_time(today=0),
+            '1' : lambda self: self.add_time(0),
+            '2' : showmain,
 
         },
 
