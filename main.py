@@ -269,8 +269,9 @@ class Main:
 
             tablename = data.todayTableName()
 
-            self.dec.alert('Today Selected! ...')
 
+            self.dec.alert('Today Selected! ...')
+            self.daymanage_viewday(date)
             
         else:
             #you can pass in prev days in two ways ( -p 2 ) = 2 days before and yyyymmdd
@@ -299,7 +300,87 @@ class Main:
                                 
                                 self.dec.alert(f'Day: {date} selected! ...''')
 
-                        
+            self.daymanage_viewday(date)
+
+    def showtable(self, key, date):
+        datamanage = Data()
+        daydata = datamanage.getdaydata(date=date)
+
+        # Apply time sort
+        if key[0] != '':
+            stval = key[0].split(':')
+            for i in daydata:
+                pass
+
+
+
+
+    def daymanage_viewday(self,date):
+
+        
+        # shortcut structure
+        # * means show everything
+        
+        # -ts xx:yy is start time sort
+        # -te xx:yy is end time sort
+        # if only start time or endtime is passed
+        # the other is considered as default
+
+        # -tag x, y, z... selects desigered tags from the data
+        # -pr num selects desigered priority tags from the table
+
+        def returnsortkeys(self, cmd):
+            sortkeys = ['', '', [], []]
+
+            if cmd == '':
+                return sortkeys
+
+            cmdlist = cmd.split(' ')
+            cmdlist = [ i for i in cmdlist if i != '']
+
+            dashcommands = ['-st','-et','-pr','-tags']
+
+            if cmdlist[0] not in dashcommands:
+                return 0
+            else:
+                cmdstate = cmdlist[0]
+                for i in cmdlist:
+                    if i in dashcommands:
+                        cmdstate = i
+                    else:
+                        cmdindex = dashcommands.index(cmdstate)
+                        if cmdindex > 1:
+                            sortkeys[cmdindex].append(i)
+                        else:
+                            sortkeys[cmdindex] = i
+
+            return sortkeys
+        
+
+        validcmd = 0
+
+        while validcmd == 0:
+            cmd = self.dec.request('Enter your shortcut or Pass nothing: ')
+            rsk = returnsortkeys(cmd)
+            if rsk != 0:
+                validcmd = 1
+                self.showtable(rsk,date)
+
+
+            else:
+                self.dec.alert('Wrong Input ...')
+
+        if cmd == '':
+            pass
+
+
+
+            
+
+
+
+            
+
 
 
 
@@ -320,12 +401,17 @@ class Main:
 
         },
 
-        'Today' : {
+        'Day-Manage' : {
             # view / add / edit
             '0' : '',
             '1' : '',
             '2' : '',
-        }
+        },
+
+        'View-Day' : {
+
+
+        },
 
 
     }
